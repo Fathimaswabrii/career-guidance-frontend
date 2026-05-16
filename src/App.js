@@ -268,6 +268,7 @@
 
 // export default App;
 
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route,Link, useLocation } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -286,16 +287,16 @@ import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 // Navigation component that shows different links based on auth state
 function Navigation() {
   const location = useLocation();
-  const authenticated = isAuthenticated();
+  const [authenticated, setAuthenticated] = useState(isAuthenticated());
   const { isDark, toggleTheme } = useTheme();
 
-  // Don't show navigation on login and register pages
-  if (location.pathname === "/" || location.pathname === "/register") {
-    return null;
-  }
+  useEffect(() => {
+    setAuthenticated(isAuthenticated());
+  }, [location]);
 
   const handleLogout = () => {
     logout();
+    setAuthenticated(false);
     window.location.href = "/";
   };
 
@@ -304,7 +305,7 @@ function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/dashboard" className="flex items-center space-x-2 group">
+          <Link to={authenticated ? "/dashboard" : "/"} className="flex items-center space-x-2 group">
             <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-105 transition">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -316,7 +317,7 @@ function Navigation() {
           </Link>
 
           {/* Navigation Links */}
-          {authenticated && (
+          {authenticated ? (
             <div className="flex items-center space-x-1">
               <Link 
                 to="/dashboard" 
@@ -377,6 +378,36 @@ function Navigation() {
                 className="ml-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
               >
                 Logout
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Link
+                to="/login"
+                className="px-4 py-2 bg-teal-500 text-white rounded-lg text-sm font-medium hover:bg-teal-600 transition"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+              >
+                Register
+              </Link>
+              <button
+                onClick={toggleTheme}
+                className="p-2 text-gray-600 hover:text-teal-600 rounded-lg hover:bg-teal-50 transition dark:text-slate-300 dark:hover:text-teal-400 dark:hover:bg-teal-900/20"
+                title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              >
+                {isDark ? (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                )}
               </button>
             </div>
           )}

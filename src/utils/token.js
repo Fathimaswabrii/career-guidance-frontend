@@ -1,29 +1,36 @@
-// export const setToken = (token) => {
-//   localStorage.setItem("access", token);
-// };
+const normalizeToken = (token) => {
+  if (!token || typeof token !== "string") return null;
+  const trimmed = token.trim();
+  if (!trimmed || trimmed === "undefined" || trimmed === "null") return null;
+  return trimmed;
+};
 
-// export const getToken = () => {
-//   return localStorage.getItem("access");
-// };
+export const setTokens = ({ access, refresh }) => {
+  const normalizedAccess = normalizeToken(access);
+  const normalizedRefresh = normalizeToken(refresh);
 
-// export const logout = () => {
-//   localStorage.removeItem("access");
-// };
+  if (normalizedAccess) {
+    localStorage.setItem("access", normalizedAccess);
+  }
 
-export const setToken = (token) => {
-  localStorage.setItem("access", token);
+  if (normalizedRefresh) {
+    localStorage.setItem("refresh", normalizedRefresh);
+  }
 };
 
 export const getToken = () => {
-  return localStorage.getItem("access");
+  return normalizeToken(localStorage.getItem("access"));
+};
+
+export const getRefreshToken = () => {
+  return normalizeToken(localStorage.getItem("refresh"));
 };
 
 export const logout = () => {
   localStorage.removeItem("access");
+  localStorage.removeItem("refresh");
 };
 
 export const isAuthenticated = () => {
-  const token = getToken();
-  // Check if token exists and is valid (not empty, not "undefined", not "null")
-  return token && token !== "undefined" && token !== "null" && token.trim() !== "";
+  return !!getToken();
 };

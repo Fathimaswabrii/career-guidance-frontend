@@ -3,38 +3,36 @@ import { getToken } from "../utils/token";
 
 const API = process.env.REACT_APP_API_URL?.replace(/\/+$/, "") || "https://career-guidance-backend.onrender.com";
 
-export const getResult = async () => {
+const authHeaders = () => {
   const token = getToken();
+  if (!token) {
+    throw new Error("Authentication token missing");
+  }
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+};
+
+export const getResult = async () => {
   return axios.get(`${API}/api/results/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: authHeaders(),
   });
 };
 
 export const getSkills = async (resultData) => {
-  const token = getToken();
-  return axios.post(`${API}/skill-recommend/`, resultData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  return axios.post(`${API}/api/skill-recommend/`, resultData, {
+    headers: authHeaders(),
   });
 };
 
 export const getCourses = async (career) => {
-  const token = getToken();
-  return axios.post(`${API}/courses/`, { career }, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  return axios.post(`${API}/api/courses/`, { career }, {
+    headers: authHeaders(),
   });
 };
 
 export const getStreams = async (resultData) => {
-  const token = getToken();
-  return axios.post(`${API}/stream/`, { career: resultData.career }, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  return axios.post(`${API}/api/stream/`, { career: resultData.career }, {
+    headers: authHeaders(),
   });
 };

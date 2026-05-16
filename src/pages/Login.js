@@ -114,7 +114,7 @@
 
 import { useState } from "react";
 import { loginUser } from "../services/authService";
-import { setToken } from "../utils/token";
+import { setTokens } from "../utils/token";
 import { useNavigate } from "react-router-dom";
 import LoginUI from "../components/LoginUI";
 
@@ -139,7 +139,7 @@ function Login() {
 
     try {
       const res = await loginUser(form);
-      setToken(res.data.access);
+      setTokens({ access: res.data.access, refresh: res.data.refresh });
       
       // Show success message briefly before redirect
       setTimeout(() => {

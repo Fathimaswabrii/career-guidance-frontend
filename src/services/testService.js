@@ -3,21 +3,25 @@ import { getToken } from "../utils/token";
 
 const API = process.env.REACT_APP_API_URL?.replace(/\/+$/, "") || "https://career-guidance-backend.onrender.com";
 
-export const getQuestions = async () => {
+const authHeaders = () => {
   const token = getToken();
+  if (!token) {
+    throw new Error("Authentication token missing");
+  }
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+};
+
+export const getQuestions = async () => {
   return axios.get(`${API}/api/questions/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: authHeaders(),
   });
 };
 
 export const submitTest = async (answers) => {
-  const token = getToken();
-  return axios.post(`${API}/submit-test/`, answers, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  return axios.post(`${API}/api/submit-test/`, answers, {
+    headers: authHeaders(),
   });
 };
 
